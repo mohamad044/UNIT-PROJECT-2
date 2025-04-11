@@ -1,0 +1,335 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{{ competition.name }} - Football Tracker{% endblock %}
+
+{% block content %}
+<div class="competition-detail-page">
+    <div class="header-row d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div class="header-left mb-3 mb-md-0">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'all_competitions' %}">Competitions</a></li>
+                    <li class="breadcrumb-item active">{{ competition.name }}</li>
+                </ol>
+            </nav>
+            <h1>
+                {% if competition.logo %}
+                    <img src="{{ competition.logo.url }}" alt="{{ competition.name }}" height="40" class="me-2">
+                {% endif %}
+                {{ competition.name }}
+                <small class="text-muted d-block d-md-inline-block mt-1 mt-md-0 ms-md-2">{{ competition.country }}</small>
+            </h1>
+        </div>
+    </div>
+    
+    <!-- Navigation tabs -->
+    <ul class="nav nav-tabs mb-4" id="competitionTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="matches-tab" data-bs-toggle="tab" data-bs-target="#matches" type="button" role="tab" aria-controls="matches" aria-selected="true">
+                <i class="fas fa-futbol me-1"></i>Matches
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            {% if competition.type == 'LEAGUE' %}
+                <button class="nav-link" id="table-tab" data-bs-toggle="tab" data-bs-target="#table" type="button" role="tab" aria-controls="table" aria-selected="false">
+                    <i class="fas fa-table me-1"></i>League Table
+                </button>
+            {% else %}
+                <button class="nav-link" id="stages-tab" data-bs-toggle="tab" data-bs-target="#stages" type="button" role="tab" aria-controls="stages" aria-selected="false">
+                    <i class="fas fa-trophy me-1"></i>Tournament Stages
+                </button>
+            {% endif %}
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="teams-tab" data-bs-toggle="tab" data-bs-target="#teams" type="button" role="tab" aria-controls="teams" aria-selected="false">
+                <i class="fas fa-users me-1"></i>Teams
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab content -->
+    <div class="tab-content" id="competitionTabContent">
+        <!-- Matches Tab -->
+        <div class="tab-pane fade show active" id="matches" role="tabpanel" aria-labelledby="matches-tab">
+            {% if live_matches %}
+                <div class="live-matches mb-5">
+                    <h2 class="section-title">
+                        <div class="live-indicator">
+                            <span class="pulse"></span>
+                        </div>
+                        Live Matches
+                    </h2>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        {% for match in live_matches %}
+                            {% include "match/match_card.html" with match=match %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            {% if today_matches %}
+                <div class="today-matches mb-5">
+                    <h2 class="section-title">Today's Matches</h2>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        {% for match in today_matches %}
+                            {% include "match/match_card.html" with match=match %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            {% if tomorrow_matches %}
+                <div class="tomorrow-matches mb-5">
+                    <h2 class="section-title">Tomorrow's Matches</h2>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        {% for match in tomorrow_matches %}
+                            {% include "match/match_card.html" with match=match %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            {% if yesterday_matches %}
+                <div class="yesterday-matches mb-5">
+                    <h2 class="section-title">Yesterday's Results</h2>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        {% for match in yesterday_matches %}
+                            {% include "match/match_card.html" with match=match %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <div class="row mt-4">
+                {% if upcoming_matches %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <i class="fas fa-calendar-alt me-1"></i>Upcoming Matches
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="list-group list-group-flush">
+                                    {% for match in upcoming_matches %}
+                                        <a href="{% url 'match_detail' match.id %}" class="list-group-item list-group-item-action">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <div>{{ match.home_team.short_name }} vs {{ match.away_team.short_name }}</div>
+                                                <small>{{ match.datetime|date:"d M, H:i" }}</small>
+                                            </div>
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% if past_matches %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <i class="fas fa-history me-1"></i>Recent Results
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="list-group list-group-flush">
+                                    {% for match in past_matches %}
+                                        <a href="{% url 'match_detail' match.id %}" class="list-group-item list-group-item-action">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <div>{{ match.home_team.short_name }} vs {{ match.away_team.short_name }}</div>
+                                                <small>{{ match.home_score }}-{{ match.away_score }}</small>
+                                            </div>
+                                            <small>{{ match.datetime|date:"d M" }}</small>
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- League Table Tab -->
+        {% if competition.type == 'LEAGUE' %}
+            <div class="tab-pane fade" id="table" role="tabpanel" aria-labelledby="table-tab">
+                {% if league_table %}
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-table me-1"></i>League Standings</span>
+                                <small class="text-muted">Last updated: {{ league_table.last_updated|date:"d M Y H:i" }}</small>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped mb-0">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Team</th>
+                                            <th>P</th>
+                                            <th>W</th>
+                                            <th>D</th>
+                                            <th>L</th>
+                                            <th>GF</th>
+                                            <th>GA</th>
+                                            <th>GD</th>
+                                            <th>Pts</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for entry in table_entries %}
+                                            <tr>
+                                                <td>{{ entry.position }}</td>
+                                                <td>
+                                                    <a href="{% url 'team_detail' entry.team.id %}" class="text-decoration-none">
+                                                        {% if entry.team.logo %}
+                                                            <img src="{{ entry.team.logo.url }}" alt="{{ entry.team.name }}" height="20" class="me-1">
+                                                        {% endif %}
+                                                        {{ entry.team.name }}
+                                                    </a>
+                                                </td>
+                                                <td>{{ entry.played }}</td>
+                                                <td>{{ entry.won }}</td>
+                                                <td>{{ entry.drawn }}</td>
+                                                <td>{{ entry.lost }}</td>
+                                                <td>{{ entry.goals_for }}</td>
+                                                <td>{{ entry.goals_against }}</td>
+                                                <td>{{ entry.goal_difference }}</td>
+                                                <td><strong>{{ entry.points }}</strong></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>League table data is not available at the moment.
+                    </div>
+                {% endif %}
+            </div>
+        {% else %}
+            <!-- Cup Stages Tab -->
+            <div class="tab-pane fade" id="stages" role="tabpanel" aria-labelledby="stages-tab">
+                {% if cup_stages %}
+                    <div class="accordion" id="stagesAccordion">
+                        {% for stage in cup_stages %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading{{ stage.id }}">
+                                    <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ stage.id }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ stage.id }}">
+                                        {{ stage.get_name_display }}
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ stage.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ stage.id }}" data-bs-parent="#stagesAccordion">
+                                    <div class="accordion-body">
+                                        {% if stage_matches.stage.id %}
+                                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                                {% for match in stage_matches.stage.id %}
+                                                    {% include "match/match_card.html" with match=match %}
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            <div class="alert alert-info">
+                                                No matches available for this stage yet.
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>Tournament stage information is not available at the moment.
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+        
+        <!-- Teams Tab -->
+        <div class="tab-pane fade" id="teams" role="tabpanel" aria-labelledby="teams-tab">
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+                {% for team in competition.teams.all %}
+                    <div class="col">
+                        <div class="card h-100 team-card">
+                            <div class="card-body text-center">
+                                {% if team.logo %}
+                                    <img src="{{ team.logo.url }}" alt="{{ team.name }}" class="team-logo-lg mb-3" height="80">
+                                {% else %}
+                                    <div class="team-logo-placeholder-lg mb-3">{{ team.short_name }}</div>
+                                {% endif %}
+                                <h5 class="card-title">{{ team.name }}</h5>
+                                <p class="card-text text-muted">{{ team.country }}</p>
+                                <a href="{% url 'team_detail' team.id %}" class="btn btn-outline-primary">Team Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>No teams available for this competition.
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Team logo placeholder */
+    .team-logo-placeholder-lg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+        background-color: #f8f9fa;
+        border-radius: 50%;
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+    
+    /* Live indicator pulse */
+    .live-indicator {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    
+    .live-indicator .pulse {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #dc3545;
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        }
+    }
+    
+    /* Section titles */
+    .section-title {
+        display: flex;
+        align-items: center;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+</style>
+{% endblock %}

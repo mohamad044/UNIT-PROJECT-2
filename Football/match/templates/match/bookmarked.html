@@ -1,0 +1,57 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Bookmarked Matches - Football Tracker{% endblock %}
+
+{% block content %}
+<div class="bookmarked-matches">
+    <h1 class="mb-4">Bookmarked Matches</h1>
+    
+    {% if not live_matches and not upcoming_matches and not finished_matches %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>You haven't bookmarked any matches yet. Browse matches and use the bookmark button to add them here.
+        </div>
+    {% endif %}
+    
+    {% if live_matches %}
+        <div class="live-matches mb-5">
+            <h2 class="section-title">
+                <div class="live-indicator">
+                    <span class="pulse"></span>
+                </div>
+                Live Matches
+            </h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for match in live_matches %}
+                    {% include "match/match_card.html" with match=match %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    
+    {% if upcoming_matches %}
+        <div class="upcoming-matches mb-5">
+            <h2 class="section-title">Upcoming Matches</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for match in upcoming_matches %}
+                    {% include "match/match_card.html" with match=match %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    
+    {% if finished_matches %}
+        <div class="finished-matches mb-5">
+            <h2 class="section-title">Finished Matches</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for match in finished_matches %}
+                    {% include "match/match_card.html" with match=match %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+

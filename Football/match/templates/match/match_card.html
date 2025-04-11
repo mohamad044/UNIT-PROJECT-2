@@ -1,0 +1,76 @@
+{% load static %}
+
+<div class="col">
+    <div class="card match-card h-100 {% if match.is_live %}live-card{% elif match.is_finished %}finished-card{% else %}upcoming-card{% endif %}">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <a href="{% url 'competition_detail' match.competition.id %}" class="competition-link">
+                {% if match.competition.logo %}
+                    <img src="{{ match.competition.logo.url }}" alt="{{ match.competition.name }}" class="competition-logo me-2" height="20">
+                {% endif %}
+                <span>{{ match.competition.name }}</span>
+            </a>
+            
+            {% if match.cup_stage %}
+                <span class="badge bg-secondary">{{ match.cup_stage.get_name_display }}</span>
+            {% endif %}
+        </div>
+        
+        <a href="{% url 'match_detail' match.id %}" class="card-body text-decoration-none text-dark">
+            <div class="match-datetime text-center mb-3">
+                {% if match.is_live %}
+                    <span class="badge bg-danger live-badge">LIVE</span>
+                    {% if match.minute %}
+                        <span class="match-minute">{{ match.minute }}'</span>
+                    {% endif %}
+                {% else %}
+                    <div class="match-date">{{ match.datetime|date:"D, d M Y" }}</div>
+                    <div class="match-time">{{ match.datetime|time:"H:i" }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="row align-items-center">
+                <div class="col-4 text-end">
+                    <a href="{% url 'team_detail' match.home_team.id %}" class="team-link">
+                        <div class="team-name home-team">{{ match.home_team.name }}</div>
+                        {% if match.home_team.logo %}
+                            <img src="{{ match.home_team.logo.url }}" alt="{{ match.home_team.logo.url }}" class="team-logo" height="40">
+                        {% else %}
+                            <div class="team-logo-placeholder home-team">{{ match.home_team.short_name }}</div>
+                        {% endif %}
+                    </a>
+                </div>
+                
+                <div class="col-4 text-center">
+                    {% if match.is_finished or match.is_live %}
+                        <div class="match-score">
+                            <span class="home-score">{{ match.home_score|default:0 }}</span>
+                            <span class="score-divider">-</span>
+                            <span class="away-score">{{ match.away_score|default:0 }}</span>
+                        </div>
+                    {% else %}
+                        <div class="match-vs">vs</div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-4 text-start">
+                    <a href="{% url 'team_detail' match.away_team.id %}" class="team-link">
+                        {% if match.away_team.logo %}
+                            <img src="{{ match.away_team.logo.url }}" alt="{{ match.away_team.logo.url }}" class="team-logo" height="40">
+                        {% else %}
+                            <div class="team-logo-placeholder away-team">{{ match.away_team.short_name }}</div>
+                        {% endif %}
+                        <div class="team-name away-team">{{ match.away_team.name }}</div>
+                    </a>
+                </div>
+            </div>
+            
+            {% if match.is_finished and match.winner %}
+                <div class="match-result text-center mt-3">
+                    <span class="badge bg-success">
+                        {{ match.winner.name }} won
+                    </span>
+                </div>
+            {% endif %}
+        </a>
+    </div>
+</div>

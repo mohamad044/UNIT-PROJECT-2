@@ -1,0 +1,9 @@
+from django.apps import AppConfig
+
+
+class FavoriteConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'favorite'
+    
+    def ready(self):
+        import favorite.signals  # Register signals

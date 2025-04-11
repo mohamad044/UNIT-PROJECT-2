@@ -1,0 +1,250 @@
+/* Main styles for Football Tracker */
+
+/* Base styling */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.container {
+    flex: 1 0 auto;
+}
+
+.footer {
+    flex-shrink: 0;
+}
+
+/* Match card styling */
+.match-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.match-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.match-card .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.live-card {
+    border-left: 4px solid #dc3545;
+}
+
+.finished-card {
+    border-left: 4px solid #28a745;
+}
+
+.upcoming-card {
+    border-left: 4px solid #007bff;
+}
+
+.competition-link {
+    text-decoration: none;
+    color: #212529;
+}
+
+.team-link {
+    text-decoration: none;
+    color: #212529;
+}
+
+.match-score {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.match-vs {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #6c757d;
+}
+
+.team-logo-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Live indicator pulse */
+.live-badge {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Section titles */
+.section-title {
+    display: flex;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.live-indicator {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.live-indicator .pulse {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #dc3545;
+    animation: pulse-shadow 1.5s infinite;
+}
+
+@keyframes pulse-shadow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+/* Nav tabs styling */
+.nav-tabs .nav-link {
+    color: #495057;
+}
+
+.nav-tabs .nav-link.active {
+    color: #007bff;
+    font-weight: 500;
+}
+
+/* Team logo placeholder for larger displays */
+.team-logo-placeholder-lg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Match detail styling */
+.match-detail-page .match-score-large {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.match-detail-page .match-vs-large {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #6c757d;
+}
+
+.match-detail-page .timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.match-detail-page .timeline:before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 2px;
+    background: #e9ecef;
+    left: 50px;
+    top: 0;
+}
+
+.match-detail-page .timeline-item {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.match-detail-page .timeline-marker {
+    width: 100px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.match-detail-page .timeline-marker .minute {
+    display: inline-block;
+    padding: 5px 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.match-detail-page .timeline-content {
+    flex-grow: 1;
+}
+
+.match-detail-page .event-card {
+    background: #f8f9fa;
+    border-radius: 4px;
+    padding: 10px 15px;
+}
+
+.match-detail-page .event-type {
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin-left: 5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .match-score {
+        font-size: 1.2rem;
+    }
+    
+    .match-detail-page .match-score-large {
+        font-size: 2rem;
+    }
+    
+    .match-detail-page .timeline:before {
+        left: 30px;
+    }
+    
+    .match-detail-page .timeline-marker {
+        width: 60px;
+    }
+}
+
+/* Bookmarked matches page */
+.bookmarked-matches .match-card {
+    margin-bottom: 1.5rem;
+}
+
+/* Team card styling */
+.team-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.team-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}

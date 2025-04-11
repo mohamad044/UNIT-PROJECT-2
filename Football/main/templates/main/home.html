@@ -1,0 +1,78 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Home - Football Tracker{% endblock %}
+
+{% block content %}
+<div class="home-page">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Football Matches</h1>
+        <div class="btn-group">
+            <a href="{% url 'home' %}?view=favorite" class="btn btn-outline-primary {% if view_preference == 'favorite' %}active{% endif %}">
+                <i class="fas fa-star me-1"></i> My Favorites
+            </a>
+            <a href="{% url 'home' %}?view=all" class="btn btn-outline-primary {% if view_preference == 'all' %}active{% endif %}">
+                <i class="fas fa-globe me-1"></i> All Matches
+            </a>
+        </div>
+    </div>
+    
+    {% if not live_matches and not today_matches and not tomorrow_matches and not yesterday_matches %}
+        <div class="alert alert-info">
+            {% if view_preference == 'favorite' %}
+                <p>You haven't selected any favorite teams or competitions yet. <a href="{% url 'select_favorites' %}">Add your favorites</a> to see matches.</p>
+            {% else %}
+                <p>There are no matches available at the moment.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    {% if live_matches %}
+        <div class="live-matches mb-5">
+            <h2 class="section-title">
+                <div class="live-indicator">
+                    <span class="pulse"></span>
+                </div>
+                Live Matches
+            </h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for match in live_matches %}
+                    {% include "match/match_card.html" with match=match %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    
+    {% if today_matches %}
+        <div class="today-matches mb-5">
+            <h2 class="section-title">Today's Matches</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for match in today_matches %}
+                    {% include "match/match_card.html" with match=match %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    
+    {% if tomorrow_matches %}
+        <div class="tomorrow-matches mb-5">
+            <h2 class="section-title">Tomorrow's Matches</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for match in tomorrow_matches %}
+                    {% include "match/match_card.html" with match=match %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    
+    {% if yesterday_matches %}
+        <div class="yesterday-matches mb-5">
+            <h2 class="section-title">Yesterday's Results</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for match in yesterday_matches %}
+                    {% include "match/match_card.html" with match=match %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

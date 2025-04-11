@@ -1,0 +1,219 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{{ team.name }} - Football Tracker{% endblock %}
+
+{% block content %}
+<div class="team-detail-page">
+    <div class="header-row d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div class="header-left mb-3 mb-md-0">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item active">{{ team.name }}</li>
+                </ol>
+            </nav>
+            <h1>
+                {% if team.logo %}
+                    <img src="{{ team.logo.url }}" alt="{{ team.name }}" height="50" class="me-2">
+                {% endif %}
+                {{ team.name }}
+                {% if team.country %}
+                    <small class="text-muted d-block d-md-inline-block mt-1 mt-md-0 ms-md-2">{{ team.country }}</small>
+                {% endif %}
+            </h1>
+        </div>
+    </div>
+    
+    <!-- Team Info Card -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-info-circle me-1"></i>Team Information
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Country:</strong> {{ team.country }}</p>
+                            {% if team.stadium %}
+                                <p><strong>Stadium:</strong> {{ team.stadium }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Competitions:</strong></p>
+                            <ul class="list-group">
+                                {% for competition in competitions %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <a href="{% url 'competition_detail' competition.id %}" class="text-decoration-none">
+                                            {{ competition.name }}
+                                        </a>
+                                        <span class="badge bg-primary rounded-pill">{{ competition.country }}</span>
+                                    </li>
+                                {% empty %}
+                                    <li class="list-group-item">No competition data available</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Matches Section -->
+    <div class="matches-section">
+        {% if live_matches %}
+            <div class="live-matches mb-5">
+                <h2 class="section-title">
+                    <div class="live-indicator">
+                        <span class="pulse"></span>
+                    </div>
+                    Live Matches
+                </h2>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {% for match in live_matches %}
+                        {% include "match/match_card.html" with match=match %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        
+        {% if today_matches %}
+            <div class="today-matches mb-5">
+                <h2 class="section-title">Today's Matches</h2>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {% for match in today_matches %}
+                        {% include "match/match_card.html" with match=match %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        
+        {% if tomorrow_matches %}
+            <div class="tomorrow-matches mb-5">
+                <h2 class="section-title">Tomorrow's Matches</h2>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {% for match in tomorrow_matches %}
+                        {% include "match/match_card.html" with match=match %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        
+        {% if yesterday_matches %}
+            <div class="yesterday-matches mb-5">
+                <h2 class="section-title">Yesterday's Results</h2>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {% for match in yesterday_matches %}
+                        {% include "match/match_card.html" with match=match %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="row mt-4">
+            {% if upcoming_matches %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-calendar-alt me-1"></i>Upcoming Matches
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush">
+                                {% for match in upcoming_matches %}
+                                    <a href="{% url 'match_detail' match.id %}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <div>
+                                                {% if match.home_team == team %}
+                                                    <strong>{{ team.short_name }}</strong> vs {{ match.away_team.short_name }}
+                                                {% else %}
+                                                    {{ match.home_team.short_name }} vs <strong>{{ team.short_name }}</strong>
+                                                {% endif %}
+                                            </div>
+                                            <small>{{ match.datetime|date:"d M, H:i" }}</small>
+                                        </div>
+                                        <small class="text-muted">{{ match.competition.name }}</small>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            {% if past_matches %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-history me-1"></i>Recent Results
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush">
+                                {% for match in past_matches %}
+                                    <a href="{% url 'match_detail' match.id %}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <div>
+                                                {% if match.home_team == team %}
+                                                    <strong>{{ team.short_name }}</strong> vs {{ match.away_team.short_name }}
+                                                {% else %}
+                                                    {{ match.home_team.short_name }} vs <strong>{{ team.short_name }}</strong>
+                                                {% endif %}
+                                            </div>
+                                            <small>{{ match.home_score }}-{{ match.away_score }}</small>
+                                        </div>
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <small class="text-muted">{{ match.competition.name }}</small>
+                                            <small>{{ match.datetime|date:"d M" }}</small>
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Live indicator pulse */
+    .live-indicator {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    
+    .live-indicator .pulse {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #dc3545;
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        }
+    }
+    
+    /* Section titles */
+    .section-title {
+        display: flex;
+        align-items: center;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+</style>
+{% endblock %}

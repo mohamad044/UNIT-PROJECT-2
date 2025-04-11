@@ -1,0 +1,134 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Select Favorites - Football Tracker{% endblock %}
+
+{% block content %}
+<div class="select-favorites-page">
+    <h1 class="mb-4">Select Your Favorites</h1>
+    
+    <div class="alert alert-info mb-4">
+        <i class="fas fa-info-circle me-2"></i>Select your favorite competitions and teams to personalize your experience. Your home page will show matches from these selections first.
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-trophy me-1"></i>Select Competitions
+                    </div>
+                    <div class="card-body">
+                        <div class="form-text mb-3">Choose the competitions you want to follow:</div>
+                        
+                        <div class="competitions-list">
+                            <div class="leagues mb-4">
+                                <h5>Leagues</h5>
+                                <div class="row row-cols-1 row-cols-md-2 g-3">
+                                    {% for competition in competitions %}
+                                        {% if competition.type == 'LEAGUE' %}
+                                            <div class="col">
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="competition-{{ competition.id }}" name="competitions" value="{{ competition.id }}" {% if competition in selected_competitions %}checked{% endif %}>
+                                                    <label class="form-check-label" for="competition-{{ competition.id }}">
+                                                        {{ competition.name }} ({{ competition.country }})
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div class="cups">
+                                <h5>Cup Competitions</h5>
+                                <div class="row row-cols-1 row-cols-md-2 g-3">
+                                    {% for competition in competitions %}
+                                        {% if competition.type == 'CUP' %}
+                                            <div class="col">
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="competition-{{ competition.id }}" name="competitions" value="{{ competition.id }}" {% if competition in selected_competitions %}checked{% endif %}>
+                                                    <label class="form-check-label" for="competition-{{ competition.id }}">
+                                                        {{ competition.name }} ({{ competition.country }})
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-users me-1"></i>Select Teams
+                    </div>
+                    <div class="card-body">
+                        <div class="form-text mb-3">Choose the teams you want to follow:</div>
+                        
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="teamSearch" placeholder="Search for teams...">
+                        </div>
+                        
+                        <div class="teams-list" style="max-height: 400px; overflow-y: auto;">
+                            <div class="row row-cols-1 row-cols-md-2 g-3">
+                                {% for team in teams %}
+                                    <div class="col team-item">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="team-{{ team.id }}" name="teams" value="{{ team.id }}" {% if team in selected_teams %}checked{% endif %}>
+                                            <label class="form-check-label" for="team-{{ team.id }}">
+                                                {{ team.name }} ({{ team.country }})
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <div class="col-12">
+                                        <div class="alert alert-info">No teams available.</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-save me-1"></i>Save Favorites
+            </button>
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">
+                <i class="fas fa-times me-1"></i>Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Simple team search functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('teamSearch');
+        const teamItems = document.querySelectorAll('.team-item');
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            teamItems.forEach(item => {
+                const teamName = item.textContent.toLowerCase();
+                if (teamName.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'main/base.html' %}
+
+{% block title %}All Competitions - Football Tracker{% endblock %}
+
+{% block content %}
+<div class="all-competitions-page">
+    <h1 class="mb-4">All Competitions</h1>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-flag me-1"></i>Leagues
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for league in leagues %}
+                            <a href="{% url 'competition_detail' league.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    {% if league.logo %}
+                                        <img src="{{ league.logo.url }}" alt="{{ league.name }}" height="24" class="me-2">
+                                    {% endif %}
+                                    {{ league.name }}
+                                </div>
+                                <span class="badge bg-primary rounded-pill">{{ league.country }}</span>
+                            </a>
+                        {% empty %}
+                            <div class="list-group-item">No leagues available</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-trophy me-1"></i>Cup Competitions
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for cup in cups %}
+                            <a href="{% url 'competition_detail' cup.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    {% if cup.logo %}
+                                        <img src="{{ cup.logo.url }}" alt="{{ cup.name }}" height="24" class="me-2">
+                                    {% endif %}
+                                    {{ cup.name }}
+                                </div>
+                                <span class="badge bg-primary rounded-pill">{{ cup.country }}</span>
+                            </a>
+                        {% empty %}
+                            <div class="list-group-item">No cup competitions available</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
