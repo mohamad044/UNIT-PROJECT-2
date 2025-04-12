@@ -24,12 +24,19 @@ def match_detail(request, match_id):
         # Redirect to remove the POST data (to prevent duplicate submissions)
         return redirect('match_detail', match_id=match_id)
     
+    # Get related matches (other matches from the same competition)
+    related_matches = Match.objects.filter(
+        competition=match.competition,
+        status='SCHEDULED'
+    ).exclude(id=match_id).order_by('datetime')[:5]
+    
     context = {
         'match': match,
         'is_bookmarked': is_bookmarked,
         'events': match.events.all().order_by('minute'),
         'home_lineup': match.lineups.filter(team=match.home_team).first(),
         'away_lineup': match.lineups.filter(team=match.away_team).first(),
+        'related_matches': related_matches,
     }
     
     return render(request, 'match/match_detail.html', context)
@@ -46,13 +53,11 @@ def bookmarked_matches(request):
     upcoming_matches = bookmarked.filter(status='SCHEDULED')
     live_matches = bookmarked.filter(status='LIVE')
     finished_matches = bookmarked.filter(status='FINISHED')
-    related_matches = None #Match.competition.matches.filter(status='SCHEDULED')[:5]
 
     context = {
         'upcoming_matches': upcoming_matches,
         'live_matches': live_matches,
         'finished_matches': finished_matches,
-        'related_matches' : related_matches,
     }
     
     return render(request, 'match/bookmarked.html', context)

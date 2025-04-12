@@ -1,11 +1,9 @@
-from django.shortcuts import render,redirect
-from django.http import HttpRequest
-# Create your views here.
-
 from django.shortcuts import render, redirect
+from django.http import HttpRequest
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import timedelta
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from match.models import Match
 from favorite.models import UserProfile
 from competition.models import Competition
@@ -13,53 +11,82 @@ from team.models import Team
 
 @login_required
 def home(request):
-    """Home page showing matches based on user preferences"""
+    """Home page showing matches based on user preferences with pagination"""
     profile, created = UserProfile.objects.get_or_create(user=request.user)
     
     # Time ranges
     today = timezone.now().date()
-    tomorrow = today + timedelta(days=1)
-    yesterday = today - timedelta(days=1)
     
     # Get matches based on view preference
     view_preference = request.GET.get('view', 'favorite')
+    page_type = request.GET.get('page_type', 'today')  # today, previous, next
+    page = request.GET.get('page', 1)
+    
+    # Define the date ranges for different page types
+    if page_type == 'previous':
+        start_date = today - timedelta(days=30)
+        end_date = today - timedelta(days=1)
+        status = 'FINISHED'
+        order = '-datetime'
+    elif page_type == 'next':
+        start_date = today + timedelta(days=1)
+        end_date = today + timedelta(days=30)
+        status = 'SCHEDULED'
+        order = 'datetime'
+    else:  # today
+        start_date = today
+        end_date = today
+        status = None  # Get all statuses for today
+        order = 'datetime'
     
     if view_preference == 'favorite':
-        # Show matches based on user's favorites
-        live_matches = profile.get_favorite_live_matches()
-        today_matches = profile.get_favorite_upcoming_matches().filter(
-            datetime__date=today
-        ).order_by('datetime')
-        #tomorrow_matches = profile.get_favorite_matches().filter(status='SCHEDULED').order_by('datetime')
-
-        tomorrow_matches = profile.get_favorite_matches().filter(status='SCHEDULED').order_by('datetime')
-
+        # Get user's favorite matches
+        if status:
+            # For previous or next matches
+            favorite_matches = profile.get_favorite_matches().filter(
+                status=status,
+                datetime__date__range=[start_date, end_date]
+            ).order_by(order)
+        else:
+            # For today's matches, include all statuses
+            favorite_matches = profile.get_favorite_matches().filter(
+                datetime__date=today
+            ).order_by(order)
         
-        yesterday_matches = profile.get_favorite_past_matches().filter(
-            datetime__date=yesterday
-        ).order_by('-datetime')
+        matches_to_paginate = favorite_matches
+        live_matches = profile.get_favorite_live_matches()
     else:
-        # Show all matches
+        # Get all matches
+        if status:
+            # For previous or next matches
+            all_matches = Match.objects.filter(
+                status=status,
+                datetime__date__range=[start_date, end_date]
+            ).order_by(order)
+        else:
+            # For today's matches, include all statuses
+            all_matches = Match.objects.filter(
+                datetime__date=today
+            ).order_by(order)
+        
+        matches_to_paginate = all_matches
         live_matches = Match.objects.filter(status='LIVE')
-        today_matches = Match.objects.filter(
-            status='SCHEDULED',
-            datetime__date=today
-        ).order_by('datetime')
-        tomorrow_matches = Match.objects.filter(
-            status='SCHEDULED',
-            datetime__date=tomorrow
-        ).order_by('datetime')
-        yesterday_matches = Match.objects.filter(
-            status='FINISHED',
-            datetime__date=yesterday
-        ).order_by('-datetime')
+    
+    # Paginate the matches
+    paginator = Paginator(matches_to_paginate, 9)  # Show 9 matches per page
+    
+    try:
+        paginated_matches = paginator.page(page)
+    except PageNotAnInteger:
+        paginated_matches = paginator.page(1)
+    except EmptyPage:
+        paginated_matches = paginator.page(paginator.num_pages)
     
     context = {
+        'matches': paginated_matches,
         'live_matches': live_matches,
-        'today_matches': today_matches,
-        'tomorrow_matches': tomorrow_matches, 
-        'yesterday_matches': yesterday_matches,
         'view_preference': view_preference,
+        'page_type': page_type,
     }
     
     return render(request, 'main/home.html', context)

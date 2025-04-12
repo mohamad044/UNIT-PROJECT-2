@@ -2,6 +2,7 @@ import os
 import django
 import requests
 from datetime import datetime, timedelta
+import urllib.request
 
 # Set up Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Football.settings')
@@ -36,26 +37,59 @@ def fetch_competitions():
         {'id': 2001, 'name': 'UEFA Champions League', 'country': 'Europe', 'type': 'CUP'},
     ]
     
+    # Make sure the media directory exists
+    os.makedirs('media/competitions/logos/', exist_ok=True)
+    
     for comp_data in target_competitions:
-        competition, created = Competition.objects.update_or_create(
-            id=comp_data['id'],
-            defaults={
+        # Fetch additional info to get the crest URL
+        response = requests.get(
+            f"{BASE_URL}/competitions/{comp_data['id']}",
+            headers=HEADERS
+        )
+        
+        if response.status_code == 200:
+            api_data = response.json()
+            emblem_url = api_data.get('emblem')
+            
+            # Default competition data
+            defaults = {
                 'name': comp_data['name'],
                 'country': comp_data['country'],
                 'type': comp_data['type'],
             }
-        )
-        
-        if created:
-            print(f"Created competition: {competition.name}")
+            
+            # Download and save emblem if available
+            if emblem_url:
+                logo_path = f'competitions/logos/{comp_data["id"]}.png'
+                full_path = os.path.join('media', logo_path)
+                
+                try:
+                    urllib.request.urlretrieve(emblem_url, full_path)
+                    defaults['logo'] = logo_path
+                    print(f"Downloaded logo for {comp_data['name']}")
+                except Exception as e:
+                    print(f"Error downloading logo for {comp_data['name']}: {e}")
+            
+            competition, created = Competition.objects.update_or_create(
+                id=comp_data['id'],
+                defaults=defaults
+            )
+            
+            if created:
+                print(f"Created competition: {competition.name}")
+            else:
+                print(f"Updated competition: {competition.name}")
         else:
-            print(f"Updated competition: {competition.name}")
+            print(f"Error fetching competition {comp_data['id']}: {response.status_code}")
     
     print(f"Total competitions: {Competition.objects.count()}")
 
 def fetch_teams():
     """Fetch teams for each competition"""
     print("Fetching teams...")
+    
+    # Make sure the media directory exists
+    os.makedirs('media/teams/logos/', exist_ok=True)
     
     for competition in Competition.objects.all():
         print(f"Fetching teams for {competition.name}...")
@@ -78,16 +112,37 @@ def fetch_teams():
                 continue
                 
             for team_data in data['teams']:
+                # Get team data
+                team_name = team_data['name']
+                team_short_name = team_data.get('shortName', team_name[:3].upper())
+                team_country = team_data.get('area', {}).get('name', 'Unknown')
+                crest_url = team_data.get('crest')
+                
+                # Default team data
+                defaults = {
+                    'name': team_name,
+                    'short_name': team_short_name,
+                    'country': team_country,
+                }
+                
+                # Download and save crest if available
+                if crest_url:
+                    logo_path = f'teams/logos/{team_data["id"]}.png'
+                    full_path = os.path.join('media', logo_path)
+                    
+                    try:
+                        urllib.request.urlretrieve(crest_url, full_path)
+                        defaults['logo'] = logo_path
+                        print(f"Downloaded logo for {team_name}")
+                    except Exception as e:
+                        print(f"Error downloading logo for {team_name}: {e}")
+                
                 team, created = Team.objects.update_or_create(
                     id=team_data['id'],
-                    defaults={
-                        'name': team_data['name'],
-                        'short_name': team_data.get('shortName', team_data['name'][:3].upper()),
-                        'country': team_data.get('area', {}).get('name', 'Unknown'),
-                    }
+                    defaults=defaults
                 )
                 
-                # Associate team with competition
+                # Make sure team is associated with this competition
                 if competition not in team.competitions.all():
                     team.competitions.add(competition)
                 
@@ -158,6 +213,25 @@ def fetch_matches():
                 # Parse datetime
                 match_datetime = datetime.fromisoformat(match_data['utcDate'].replace('Z', '+00:00'))
                 
+                # Handle cup stage if applicable
+                cup_stage = None
+                if competition.type == 'CUP' and 'stage' in match_data:
+                    stage_mapping = {
+                        'GROUP_STAGE': ('GROUP', 1),
+                        'LAST_16': ('R16', 2),
+                        'QUARTER_FINALS': ('QF', 3),
+                        'SEMI_FINALS': ('SF', 4),
+                        'FINAL': ('F', 5),
+                    }
+                    
+                    if match_data['stage'] in stage_mapping:
+                        stage_name, order = stage_mapping[match_data['stage']]
+                        cup_stage, _ = CupStage.objects.get_or_create(
+                            competition=competition,
+                            name=stage_name,
+                            defaults={'order': order}
+                        )
+                
                 # Create or update match
                 match, created = Match.objects.update_or_create(
                     id=match_data['id'],
@@ -170,6 +244,7 @@ def fetch_matches():
                         'home_score': match_data.get('score', {}).get('fullTime', {}).get('home'),
                         'away_score': match_data.get('score', {}).get('fullTime', {}).get('away'),
                         'minute': match_data.get('minute', '') if status == 'LIVE' else None,
+                        'cup_stage': cup_stage,
                     }
                 )
                 

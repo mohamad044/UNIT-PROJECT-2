@@ -60,7 +60,7 @@
                         {% if match.home_team.logo %}
                             <img src="{{ match.home_team.logo.url }}" alt="{{ match.home_team.name }}" class="team-logo-large" height="80">
                         {% else %}
-                            <div class="team-logo-placeholder home-team-large">{{ match.home_team.short_name }}</div>
+                            <div class="team-logo-placeholder-lg">{{ match.home_team.short_name }}</div>
                         {% endif %}
                     </a>
                 </div>
@@ -87,7 +87,7 @@
                         {% if match.away_team.logo %}
                             <img src="{{ match.away_team.logo.url }}" alt="{{ match.away_team.name }}" class="team-logo-large" height="80">
                         {% else %}
-                            <div class="team-logo-placeholder away-team-large">{{ match.away_team.short_name }}</div>
+                            <div class="team-logo-placeholder-lg">{{ match.away_team.short_name }}</div>
                         {% endif %}
                         <div class="team-name away-team mt-2">{{ match.away_team.name }}</div>
                     </a>
@@ -348,7 +348,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="list-group list-group-flush">
-                        {% for related_ma in related_match %}
+                        {% for related_match in related_matches %}
                             {% if related_match.id != match.id %}
                                 <a href="{% url 'match_detail' related_match.id %}" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
@@ -371,107 +371,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-    /* Timeline styling for match events */
-    .timeline {
-        position: relative;
-        padding: 20px 0;
-    }
-    
-    .timeline:before {
-        content: '';
-        position: absolute;
-        height: 100%;
-        width: 2px;
-        background: #e9ecef;
-        left: 50px;
-        top: 0;
-    }
-    
-    .timeline-item {
-        display: flex;
-        margin-bottom: 20px;
-    }
-    
-    .timeline-marker {
-        width: 100px;
-        text-align: center;
-        flex-shrink: 0;
-    }
-    
-    .timeline-marker .minute {
-        display: inline-block;
-        padding: 5px 10px;
-        background: #f8f9fa;
-        border-radius: 4px;
-        font-weight: bold;
-    }
-    
-    .timeline-content {
-        flex-grow: 1;
-    }
-    
-    .event-card {
-        background: #f8f9fa;
-        border-radius: 4px;
-        padding: 10px 15px;
-    }
-    
-    .event-type {
-        color: #6c757d;
-        font-size: 0.85rem;
-        margin-left: 5px;
-    }
-    
-    /* Match score styling */
-    .match-score-large {
-        font-size: 2.5rem;
-        font-weight: bold;
-    }
-    
-    .match-vs-large {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #6c757d;
-    }
-    
-    /* Team logo placeholders */
-    .team-logo-placeholder {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        background-color: #f8f9fa;
-        border-radius: 4px;
-        font-weight: bold;
-    }
-    
-    .team-logo-placeholder.home-team-large,
-    .team-logo-placeholder.away-team-large {
-        width: 80px;
-        height: 80px;
-        font-size: 1.25rem;
-    }
-    
-    /* Live badge pulse animation */
-    .live-badge {
-        animation: pulse 1.5s infinite;
-    }
-    
-    @keyframes pulse {
-        0% {
-            opacity: 1;
-        }
-        50% {
-            opacity: 0.7;
-        }
-        100% {
-            opacity: 1;
-        }
-    }
-</style>
 {% endblock %}
