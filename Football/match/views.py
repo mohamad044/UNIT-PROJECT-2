@@ -46,10 +46,8 @@ def bookmarked_matches(request):
     """View showing all bookmarked matches"""
     profile = UserProfile.objects.get(user=request.user)
     
-    # Get the bookmarked matches
     bookmarked = profile.bookmarked_matches.all().order_by('datetime')
     
-    # Split into upcoming, live, and finished
     upcoming_matches = bookmarked.filter(status='SCHEDULED')
     live_matches = bookmarked.filter(status='LIVE')
     finished_matches = bookmarked.filter(status='FINISHED')

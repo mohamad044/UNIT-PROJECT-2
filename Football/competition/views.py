@@ -9,15 +9,12 @@ def competition_detail(request, competition_id):
     """View for a specific competition, showing matches and standings"""
     competition = get_object_or_404(Competition, id=competition_id)
     
-    # Get matches for this competition
     all_matches = competition.matches.all()
     
-    # Time ranges
     today = timezone.now().date()
     tomorrow = today + timedelta(days=1)
     yesterday = today - timedelta(days=1)
     
-    # Filter matches by date and status
     live_matches = all_matches.filter(status='LIVE')
     today_matches = all_matches.filter(datetime__date=today, status='SCHEDULED').order_by('datetime')
     tomorrow_matches = all_matches.filter(datetime__date=tomorrow, status='SCHEDULED').order_by('datetime')
@@ -42,7 +39,6 @@ def competition_detail(request, competition_id):
     }
     
     if competition.type == 'LEAGUE':
-        # Add league table to context
         try:
             league_table = competition.league_table
             context['league_table'] = league_table
@@ -50,11 +46,9 @@ def competition_detail(request, competition_id):
         except LeagueTable.DoesNotExist:
             pass
     else:
-        # For cup competitions, add stages
         cup_stages = competition.cup_stages.all().order_by('-order')
         context['cup_stages'] = cup_stages
         
-        # Get matches for each stage
         stage_matches = {}
         for stage in cup_stages:
             stage_matches[stage.id] = stage.matches.all().order_by('datetime')

@@ -12,7 +12,6 @@
         </div>
         
         <div class="header-right d-flex align-items-center gap-2">
-            <!-- Bookmark Button -->
             <form method="post">
                 {% csrf_token %}
                 <button type="submit" name="toggle_bookmark" class="btn {% if is_bookmarked %}btn-warning{% else %}btn-outline-warning{% endif %}">
@@ -116,7 +115,6 @@
     
     <div class="row">
         <div class="col-lg-8">
-            <!-- Match Events -->
             <div class="card mb-4">
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs" id="matchTab" role="tablist">
@@ -358,34 +356,7 @@
                     {% endif %}
                 </div>
             </div>
-            
-            <!-- Other Matches -->
-            <div class="card">
-                <div class="card-header">
-                    <i class="fas fa-calendar-alt me-1"></i>More Matches
-                </div>
-                <div class="card-body p-0">
-                    <div class="list-group list-group-flush">
-                        {% for related_match in related_matches %}
-                            {% if related_match.id != match.id %}
-                                <a href="{% url 'match_detail' related_match.id %}" class="list-group-item list-group-item-action">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <div>{{ related_match.home_team.short_name }} vs {{ related_match.away_team.short_name }}</div>
-                                        <small>{{ related_match.datetime|date:"d M, H:i" }}</small>
-                                    </div>
-                                </a>
-                            {% endif %}
-                        {% empty %}
-                            <div class="list-group-item">No upcoming matches.</div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="card-footer text-center">
-                    <a href="{% url 'competition_detail' match.competition.id %}" class="btn btn-sm btn-outline-primary">
-                        View All Matches
-                    </a>
-                </div>
-            </div>
+
         </div>
     </div>
 </div>

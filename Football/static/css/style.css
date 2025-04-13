@@ -1,11 +1,23 @@
-/* Main styles for Football Tracker */
-
-/* Base styling */
 body {
+    --light-header: #1556b9;  
+    --light-footer: #1556b9;
+    --dark-header: #000000;  
+    --dark-footer: #000000;
+    
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     background-color: #f8f9fa;
+    color: #212529;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.navbar.navbar-dark.bg-dark {
+    background-color: var(--light-header) !important;
+}
+
+.footer {
+    background-color: var(--light-footer) !important;
 }
 
 .container {
@@ -16,7 +28,113 @@ body {
     flex-shrink: 0;
 }
 
-/* Match card styling */
+body.dark-mode {
+    --dark-bg: #121212;
+    --dark-surface: #1e1e1e;
+    --dark-surface-2: #2c2c2c;
+    --dark-border: #383838;
+    --dark-text: #e9ecef;
+    --dark-text-muted: #adb5bd;
+    --dark-primary: #3d8bfd;
+    --dark-primary-hover: #0d6efd;
+    
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+}
+
+body.dark-mode .navbar.navbar-dark.bg-dark {
+    background-color: var(--light-header) !important;
+}
+
+body.dark-mode .footer {
+    background-color: var(--light-footer) !important;
+}
+
+body.dark-mode .card,
+body.dark-mode .list-group-item,
+body.dark-mode .dropdown-menu,
+body.dark-mode .form-control,
+body.dark-mode .form-select,
+body.dark-mode .accordion-button,
+body.dark-mode .form-check-input {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+body.dark-mode .card-header,
+body.dark-mode .accordion-button:not(.collapsed),
+body.dark-mode .list-group-item-action:hover,
+body.dark-mode .dropdown-item:hover,
+body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: var(--dark-surface-2) !important;
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+body.dark-mode .alert {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+body.dark-mode .alert-success { background-color: rgba(25, 135, 84, 0.15); color: #75b798; }
+body.dark-mode .alert-danger { background-color: rgba(220, 53, 69, 0.15); color: #ea868f; }
+body.dark-mode .alert-warning { background-color: rgba(255, 193, 7, 0.15); color: #ffda6a; }
+body.dark-mode .alert-info { background-color: rgba(13, 202, 240, 0.15); color: #6edff6; }
+
+body.dark-mode .text-muted,
+body.dark-mode .form-floating label,
+body.dark-mode .match-detail-page .event-type {
+    color: var(--dark-text-muted) !important;
+}
+
+body.dark-mode .competition-link,
+body.dark-mode .team-link,
+body.dark-mode .nav-tabs .nav-link {
+    color: var(--dark-text);
+}
+
+body.dark-mode .btn-outline-primary,
+body.dark-mode .btn-outline-secondary,
+body.dark-mode .page-link {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-primary);
+    color: var(--dark-primary);
+}
+
+body.dark-mode .btn-outline-primary:hover,
+body.dark-mode .btn-outline-secondary:hover,
+body.dark-mode .btn-outline-primary.active,
+body.dark-mode .btn-outline-secondary.active,
+body.dark-mode .page-item.active .page-link {
+    background-color: var(--dark-primary-hover);
+    border-color: var(--dark-primary-hover);
+    color: white;
+}
+
+body.dark-mode .nav-tabs .nav-link.active {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border) var(--dark-border) var(--dark-surface);
+    color: white;
+}
+
+body.dark-mode .team-logo-placeholder,
+body.dark-mode .team-logo-placeholder-lg,
+body.dark-mode .timeline-marker .minute,
+body.dark-mode .event-card {
+    background-color: var(--dark-surface-2);
+    color: var(--dark-text);
+}
+
+body.dark-mode .section-title {
+    border-color: var(--dark-border);
+}
+
+body.dark-mode .match-detail-page .timeline:before {
+    background: var(--dark-border);
+}
+
 .match-card {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     border: none;
@@ -66,6 +184,10 @@ body {
     color: #6c757d;
 }
 
+body.dark-mode .match-vs {
+    color: var(--dark-text-muted);
+}
+
 .team-logo-placeholder {
     display: inline-flex;
     align-items: center;
@@ -77,24 +199,16 @@ body {
     font-weight: bold;
 }
 
-/* Live indicator pulse */
 .live-badge {
     animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-    0% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.7;
-    }
-    100% {
-        opacity: 1;
-    }
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
 }
 
-/* Section titles */
 .section-title {
     display: flex;
     align-items: center;
@@ -118,18 +232,11 @@ body {
 }
 
 @keyframes pulse-shadow {
-    0% {
-        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
-    }
+    0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
 }
 
-/* Nav tabs styling */
 .nav-tabs .nav-link {
     color: #495057;
 }
@@ -139,7 +246,6 @@ body {
     font-weight: 500;
 }
 
-/* Team logo placeholder for larger displays */
 .team-logo-placeholder-lg {
     display: flex;
     align-items: center;
@@ -153,7 +259,6 @@ body {
     font-size: 1.5rem;
 }
 
-/* Match detail styling */
 .match-detail-page .match-score-large {
     font-size: 2.5rem;
     font-weight: bold;
@@ -215,31 +320,17 @@ body {
     margin-left: 5px;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
-    .match-score {
-        font-size: 1.2rem;
-    }
-    
-    .match-detail-page .match-score-large {
-        font-size: 2rem;
-    }
-    
-    .match-detail-page .timeline:before {
-        left: 30px;
-    }
-    
-    .match-detail-page .timeline-marker {
-        width: 60px;
-    }
+    .match-score { font-size: 1.2rem; }
+    .match-detail-page .match-score-large { font-size: 2rem; }
+    .match-detail-page .timeline:before { left: 30px; }
+    .match-detail-page .timeline-marker { width: 60px; }
 }
 
-/* Bookmarked matches page */
 .bookmarked-matches .match-card {
     margin-bottom: 1.5rem;
 }
 
-/* Team card styling */
 .team-card {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
@@ -248,3 +339,76 @@ body {
     transform: translateY(-5px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
+body.dark-mode .table {
+    color: var(--dark-text);
+    background-color: transparent;
+}
+
+body.dark-mode .table {
+    color: var(--dark-text);
+    background-color: transparent;
+}
+
+body.dark-mode .table th,
+body.dark-mode .table td {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+body.dark-mode .table-dark,
+body.dark-mode .table-dark th,
+body.dark-mode .table-dark td {
+    background-color: #343a40 !important;
+    border-color: #454d55 !important;
+}
+
+body.dark-mode .table-hover tbody tr:hover td,
+body.dark-mode .table-hover tbody tr:hover th {
+    background-color: var(--dark-surface-2);
+    color: var(--dark-text);
+}
+
+body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: var(--dark-surface-2);
+    color: var(--dark-text);
+}
+
+body.dark-mode .table-primary, 
+body.dark-mode .table-primary > th, 
+body.dark-mode .table-primary > td,
+body.dark-mode tr.table-primary > td,
+body.dark-mode tr.table-primary > th {
+    background-color: rgba(13, 110, 253, 0.2) !important;
+    color: var(--dark-text) !important;
+}
+
+body.dark-mode .match-detail-page .card-body .table thead th,
+body.dark-mode .match-detail-page .card-body .table tbody td {
+    background-color: var(--dark-surface) !important;
+    color: var(--dark-text) !important;
+    border-color: var(--dark-border) !important;
+}
+
+body.dark-mode .match-detail-page .card-body .table-striped tbody tr:nth-of-type(odd) td {
+    background-color: var(--dark-surface-2) !important;
+}
+
+body.dark-mode .table th[scope="col"],
+body.dark-mode .table thead th {
+    background-color: var(--dark-surface-2) !important;
+    color: var(--dark-text) !important;
+    border-color: var(--dark-border) !important;
+}
+
+body.dark-mode tr.bg-success td,
+body.dark-mode tr.bg-danger td,
+body.dark-mode tr.bg-warning td,
+body.dark-mode tr.bg-info td {
+    color: #212529 !important; 
+}
+
+body.dark-mode .bg-success { background-color: #198754 !important; }
+body.dark-mode .bg-danger { background-color: #dc3545 !important; }
+body.dark-mode .bg-warning { background-color: #ffc107 !important; }
+body.dark-mode .bg-info { background-color: #0dcaf0 !important; }

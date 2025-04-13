@@ -36,7 +36,6 @@ def signup_view(request):
             new_user.is_active = False
             new_user.save()
 
-            # Send verification code
             code = generate_verification_code()
             verification_codes[email] = code
             send_verification_code_email(email, code)
@@ -87,9 +86,3 @@ def logout_view(request):
     messages.success(request,"logged out successfuly ", "alert-warning")
     return redirect('accounts:login_view')
 
-
-
-'''
-> front-end 
-
-'''

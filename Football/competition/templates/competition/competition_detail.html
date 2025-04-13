@@ -43,9 +43,7 @@
         </li>
     </ul>
     
-    <!-- Tab content -->
     <div class="tab-content" id="competitionTabContent">
-        <!-- Matches Tab -->
         <div class="tab-pane fade show active" id="matches" role="tabpanel" aria-labelledby="matches-tab">
             {% if live_matches %}
                 <div class="live-matches mb-5">
@@ -144,7 +142,6 @@
             </div>
         </div>
         
-        <!-- League Table Tab -->
         {% if competition.type == 'LEAGUE' %}
             <div class="tab-pane fade" id="table" role="tabpanel" aria-labelledby="table-tab">
                 {% if league_table %}
@@ -206,7 +203,6 @@
                 {% endif %}
             </div>
         {% else %}
-            <!-- Cup Stages Tab -->
             <div class="tab-pane fade" id="stages" role="tabpanel" aria-labelledby="stages-tab">
                 {% if cup_stages %}
                     <div class="accordion" id="stagesAccordion">
@@ -243,7 +239,6 @@
             </div>
         {% endif %}
         
-        <!-- Teams Tab -->
         <div class="tab-pane fade" id="teams" role="tabpanel" aria-labelledby="teams-tab">
             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
                 {% for team in competition.teams.all %}

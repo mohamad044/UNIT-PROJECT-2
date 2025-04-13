@@ -1,4 +1,3 @@
-# competitions/tasks.py
 from celery import shared_task
 import requests
 from django.conf import settings
@@ -16,7 +15,6 @@ def fetch_standings():
         'x-rapidapi-host': 'v3.football.api-sports.io'
     }
     
-    # Fetch standings for top leagues
     top_leagues = [
         39,  # Premier League
         140,  # La Liga
@@ -47,10 +45,8 @@ def fetch_standings():
                         }
                     )
                     
-                    # Clear existing standings for this competition
                     Standing.objects.filter(competition=competition).delete()
                     
-                    # Process each team's standing
                     for team_standing in league_standings.get('league', {}).get('standings', [])[0]:
                         team, _ = Team.objects.get_or_create(
                             external_id=team_standing.get('team', {}).get('id'),

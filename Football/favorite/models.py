@@ -23,7 +23,6 @@ class UserProfile(models.Model):
             competition__in=self.favorite_competitions.all()
         )
         
-        # Combine and remove duplicates
         return (team_matches | competition_matches).distinct()
     
     def get_favorite_upcoming_matches(self):

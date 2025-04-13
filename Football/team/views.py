@@ -10,11 +10,8 @@ def team_detail(request, team_id):
     """View showing team details and matches"""
     team = get_object_or_404(Team, id=team_id)
     
-    # Get current date
     today = timezone.now().date()
-    
-    # Get team's matches for different categories
-    # Get today's matches directly without using filter() after union()
+
     home_today = Match.objects.filter(
         datetime__date=today,
         home_team=team
@@ -25,7 +22,6 @@ def team_detail(request, team_id):
     )
     today_matches = list(home_today) + list(away_today)
     
-    # Same for upcoming matches
     home_upcoming = Match.objects.filter(
         status='SCHEDULED',
         datetime__date__gt=today,
@@ -38,7 +34,6 @@ def team_detail(request, team_id):
     ).order_by('datetime')[:10]
     upcoming_matches = list(home_upcoming) + list(away_upcoming)
     
-    # Same for past matches
     home_past = Match.objects.filter(
         status='FINISHED',
         home_team=team
@@ -49,7 +44,6 @@ def team_detail(request, team_id):
     ).order_by('-datetime')[:10]
     past_matches = list(home_past) + list(away_past)
     
-    # Same for live matches
     home_live = Match.objects.filter(
         status='LIVE',
         home_team=team
