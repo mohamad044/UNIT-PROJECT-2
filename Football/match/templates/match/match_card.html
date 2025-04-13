@@ -31,12 +31,13 @@
             <div class="row align-items-center">
                 <div class="col-4 text-end">
                     <a href="{% url 'team_detail' match.home_team.id %}" class="team-link">
-                        <div class="team-name home-team">{{ match.home_team.short_name }}</div>
+                        
                         {% if match.home_team.logo %}
                             <img src="{{ match.home_team.logo.url }}" alt="{{ match.home_team.name }}" class="team-logo" height="40">
                         {% else %}
                             <div class="team-logo-placeholder home-team">{{ match.home_team.short_name }}</div>
                         {% endif %}
+                        <div class="team-name home-team">{{ match.home_team.short_name }}</div>
                     </a>
                 </div>
                 

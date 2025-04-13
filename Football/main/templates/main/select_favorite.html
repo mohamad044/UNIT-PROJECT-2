@@ -6,9 +6,7 @@
 <div class="select-favorites-page">
     <h1 class="mb-4">Select Your Favorites</h1>
     
-    <div class="alert alert-info mb-4">
-        <i class="fas fa-info-circle me-2"></i>Select your favorite competitions and teams to personalize your experience. Your home page will show matches from these selections first.
-    </div>
+
     
     <form method="post">
         {% csrf_token %}
@@ -69,33 +67,60 @@
                         <i class="fas fa-users me-1"></i>Select Teams
                     </div>
                     <div class="card-body">
-                        <div class="form-text mb-3">Choose the teams you want to follow:</div>
-                        
-                        <div class="mb-3">
-                            <input type="text" class="form-control" id="teamSearch" placeholder="Search for teams...">
-                        </div>
+                        <div class="form-text mb-3">Choose teams from available leagues:</div>
                         
                         <div class="teams-list" style="max-height: 400px; overflow-y: auto;">
-                            <div class="row row-cols-1 row-cols-md-2 g-3">
-                                {% for team in teams %}
-                                    <div class="col team-item">
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="team-{{ team.id }}" name="teams" value="{{ team.id }}" {% if team in selected_teams %}checked{% endif %}>
-                                            <label class="form-check-label" for="team-{{ team.id }}">
-                                                {{ team.name }} ({{ team.country }})
-                                            </label>
+                            <div class="accordion" id="leagueAccordion">
+                                {% for league in competitions %}
+                                    {% if league.type == 'LEAGUE' %}
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading{{ league.id }}">
+                                                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" 
+                                                        type="button" data-bs-toggle="collapse" 
+                                                        data-bs-target="#collapse{{ league.id }}" 
+                                                        aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" 
+                                                        aria-controls="collapse{{ league.id }}">
+                                                    {% if league.logo %}
+                                                        <img src="{{ league.logo.url }}" alt="{{ league.name }}" height="20" class="me-2">
+                                                    {% endif %}
+                                                    {{ league.name }} ({{ league.country }})
+                                                </button>
+                                            </h2>
+                                            <div id="collapse{{ league.id }}" 
+                                                 class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" 
+                                                 aria-labelledby="heading{{ league.id }}" 
+                                                 data-bs-parent="#leagueAccordion">
+                                                <div class="accordion-body">
+                                                    <div class="row row-cols-1 row-cols-md-2 g-3">
+                                                        {% for team in teams %}
+                                                            {% if league in team.competitions.all %}
+                                                                <div class="col team-item">
+                                                                    <div class="form-check">
+                                                                        <input type="checkbox" class="form-check-input" 
+                                                                               id="team-{{ team.id }}" name="teams" value="{{ team.id }}" 
+                                                                               {% if team in selected_teams %}checked{% endif %}>
+                                                                        <label class="form-check-label" for="team-{{ team.id }}">
+                                                                            {% if team.logo %}
+                                                                                <img src="{{ team.logo.url }}" alt="{{ team.name }}" height="20" class="me-1">
+                                                                            {% endif %}
+                                                                            {{ team.name }}
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                {% empty %}
-                                    <div class="col-12">
-                                        <div class="alert alert-info">No teams available.</div>
-                                    </div>
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            
         </div>
         
         <div class="d-grid gap-2 d-md-flex justify-content-md-center">

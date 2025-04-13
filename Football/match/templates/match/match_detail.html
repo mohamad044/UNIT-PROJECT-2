@@ -7,24 +7,42 @@
 <div class="match-detail-page">
     <div class="header-row d-md-flex justify-content-between align-items-center mb-4">
         <div class="header-left mb-3 mb-md-0">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'competition_detail' match.competition.id %}">{{ match.competition.name }}</a></li>
-                    <li class="breadcrumb-item active">Match Details</li>
-                </ol>
-            </nav>
+
             <h1 class="mb-0">{{ match.home_team.name }} vs {{ match.away_team.name }}</h1>
         </div>
         
-        <div class="header-right">
+        <div class="header-right d-flex align-items-center gap-2">
+            <!-- Bookmark Button -->
             <form method="post">
                 {% csrf_token %}
                 <button type="submit" name="toggle_bookmark" class="btn {% if is_bookmarked %}btn-warning{% else %}btn-outline-warning{% endif %}">
-                    <i class="fas {% if is_bookmarked %}fa-bookmark{% else %}fa-bookmark{% endif %}"></i>
+                    <i class="fas fa-bookmark me-1"></i>
                     {% if is_bookmarked %}Bookmarked{% else %}Bookmark{% endif %}
                 </button>
             </form>
+            
+            <!-- Notification Dropdown -->
+            {% if not match.is_finished and not match.is_live %}
+                <div class="dropdown">
+                    <button class="btn btn-outline-info dropdown-toggle" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell me-1"></i> Notify Me
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                        <li class="dropdown-header">Get notified before match</li>
+                        <form method="post" action="{% url 'set_match_notification' match.id %}">
+                            {% csrf_token %}
+                            <li><button class="dropdown-item" type="submit" name="minutes_before" value="60">1 hour before</button></li>
+                            <li><button class="dropdown-item" type="submit" name="minutes_before" value="30">30 minutes before</button></li>
+                            <li><button class="dropdown-item" type="submit" name="minutes_before" value="15">15 minutes before</button></li>
+                            <li><button class="dropdown-item" type="submit" name="minutes_before" value="5">5 minutes before</button></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button class="dropdown-item text-info" type="submit" name="minutes_before" value="0">Test notification</button></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button class="dropdown-item text-danger" type="submit" name="minutes_before" value="">Cancel notification</button></li>
+                        </form>
+                    </ul>
+                </div>
+            {% endif %}
         </div>
     </div>
     

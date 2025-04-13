@@ -31,17 +31,15 @@
         </div>
     </div>
     
-    {% if not matches and not live_matches %}
-        <div class="alert alert-info">
-            {% if view_preference == 'favorite' %}
+   {% if not matches and not live_matches %}
+        {% if user.profile.favorite_competitions.all.count == 0 and user.profile.favorite_teams.all.count == 0 %}
                 <p>You haven't selected any favorite teams or competitions yet. <a href="{% url 'select_favorites' %}">Add your favorites</a> to see matches.</p>
             {% else %}
                 <p>There are no matches available for this time period.</p>
             {% endif %}
-        </div>
     {% endif %}
     
-    {% if live_matches %}
+    {% if live_matches and page_type == 'today' %}
         <div class="live-matches mb-5">
             <h2 class="section-title">
                 <div class="live-indicator">

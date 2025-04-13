@@ -61,3 +61,69 @@ def bookmarked_matches(request):
     }
     
     return render(request, 'match/bookmarked.html', context)
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import Match, MatchNotification
+
+@login_required
+def set_match_notification(request, match_id):
+    """Set up email notification for a match"""
+    match = get_object_or_404(Match, id=match_id)
+    
+    if request.method == 'POST':
+        minutes_before = request.POST.get('minutes_before')
+        
+        if minutes_before:
+            minutes_before = int(minutes_before)
+            
+            notification, created = MatchNotification.objects.update_or_create(
+                user=request.user,
+                match=match,
+                defaults={'minutes_before': minutes_before, 'is_sent': False}
+            )
+            
+            if minutes_before == 0:
+                send_match_notification_email(notification)
+                notification.is_sent = True
+                notification.save()
+                messages.success(request, "Test notification sent to your email.")
+            else:
+                messages.success(request, f"You'll be notified {minutes_before} minutes before the match starts.")
+        else:
+            MatchNotification.objects.filter(user=request.user, match=match).delete()
+            messages.info(request, "Match notification removed.")
+            
+    return redirect('match_detail', match_id=match.id)
+
+def send_match_notification_email(notification):
+    """Send email notification for a match"""
+    match = notification.match
+    user = notification.user
+    
+    subject = f"Match Reminder: {match.home_team.name} vs {match.away_team.name}"
+    
+    message = f"""
+Hello {user.username},
+
+This is a reminder for the upcoming match:
+
+{match.home_team.name} vs {match.away_team.name}
+Competition: {match.competition.name}
+Date: {match.datetime.strftime('%d %B %Y')}
+Time: {match.datetime.strftime('%H:%M')}
+
+Enjoy the match!
+
+"""
+    
+    send_mail(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        fail_silently=False,
+    )

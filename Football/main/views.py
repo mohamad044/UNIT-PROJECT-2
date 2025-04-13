@@ -73,7 +73,7 @@ def home(request):
         live_matches = Match.objects.filter(status='LIVE')
     
     # Paginate the matches
-    paginator = Paginator(matches_to_paginate, 9)  # Show 9 matches per page
+    paginator = Paginator(matches_to_paginate, 6)  
     
     try:
         paginated_matches = paginator.page(page)
@@ -100,7 +100,6 @@ def select_favorites(request):
         # Handle form submission for saving favorites
         selected_competitions = request.POST.getlist('competitions')
         selected_teams = request.POST.getlist('teams')
-        
         # Update user's favorites
         profile.favorite_competitions.clear()
         for comp_id in selected_competitions:
@@ -114,6 +113,7 @@ def select_favorites(request):
         for team_id in selected_teams:
             try:
                 team = Team.objects.get(id=team_id)
+                print(team.logo)
                 profile.favorite_teams.add(team)
             except Team.DoesNotExist:
                 continue
@@ -123,7 +123,7 @@ def select_favorites(request):
     # Display form for selecting favorites
     competitions = Competition.objects.all().order_by('country', 'name')
     teams = Team.objects.all().order_by('name')
-    
+
     context = {
         'competitions': competitions,
         'teams': teams,
