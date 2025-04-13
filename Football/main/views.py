@@ -14,15 +14,12 @@ def home(request):
     """Home page showing matches based on user preferences with pagination"""
     profile, created = UserProfile.objects.get_or_create(user=request.user)
     
-    # Time ranges
     today = timezone.now().date()
     
-    # Get matches based on view preference
     view_preference = request.GET.get('view', 'favorite')
-    page_type = request.GET.get('page_type', 'today')  # today, previous, next
+    page_type = request.GET.get('page_type', 'today') 
     page = request.GET.get('page', 1)
     
-    # Define the date ranges for different page types
     if page_type == 'previous':
         start_date = today - timedelta(days=30)
         end_date = today - timedelta(days=1)
@@ -33,16 +30,14 @@ def home(request):
         end_date = today + timedelta(days=30)
         status = 'SCHEDULED'
         order = 'datetime'
-    else:  # today
+    else:  
         start_date = today
         end_date = today
-        status = None  # Get all statuses for today
+        status = None  
         order = 'datetime'
     
     if view_preference == 'favorite':
-        # Get user's favorite matches
         if status:
-            # For previous or next matches
             favorite_matches = profile.get_favorite_matches().filter(
                 status=status,
                 datetime__date__range=[start_date, end_date]
@@ -72,7 +67,6 @@ def home(request):
         matches_to_paginate = all_matches
         live_matches = Match.objects.filter(status='LIVE')
     
-    # Paginate the matches
     paginator = Paginator(matches_to_paginate, 6)  
     
     try:
@@ -97,10 +91,8 @@ def select_favorites(request):
     profile, created = UserProfile.objects.get_or_create(user=request.user)
     
     if request.method == 'POST':
-        # Handle form submission for saving favorites
         selected_competitions = request.POST.getlist('competitions')
         selected_teams = request.POST.getlist('teams')
-        # Update user's favorites
         profile.favorite_competitions.clear()
         for comp_id in selected_competitions:
             try:
@@ -120,7 +112,6 @@ def select_favorites(request):
         
         return redirect('home')
     
-    # Display form for selecting favorites
     competitions = Competition.objects.all().order_by('country', 'name')
     teams = Team.objects.all().order_by('name')
 
